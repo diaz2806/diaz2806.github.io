@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alberto Díaz · Full Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080a0f;
+  --bg2: #0d1117;
+  --bg3: #111820;
+  --accent: #00d4ff;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --border: rgba(255,255,255,0.07);
+  --glow: 0 0 40px rgba(0,212,255,0.15);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  width: 8px; height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s;
+  mix-blend-mode: screen;
+}
+.cursor-ring {
+  width: 32px; height: 32px;
+  border: 1px solid rgba(0,212,255,0.4);
+  border-radius: 50%;
+  position: fixed;
+  top: 0; left: 0;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.15s ease, width 0.2s, height 0.2s, border-color 0.2s;
+}
+
+/* CANVAS BACKGROUND */
+#bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 1.5rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,10,15,0.7);
+}
+
+.nav-logo {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 0;
+  width: 0; height: 1px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-links a:hover::after { width: 100%; }
+
+/* MAIN LAYOUT */
+main { position: relative; z-index: 1; }
+
+section {
+  min-height: 100vh;
+  padding: 8rem 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* HERO */
+#hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-top: 10rem;
+  position: relative;
+}
+
+.hero-eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.2s forwards;
+}
+
+.hero-title {
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 1rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.4s forwards;
+}
+
+.hero-title .line2 {
+  display: block;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.25);
+}
+
+.hero-title .accent-word {
+  color: var(--accent);
+  position: relative;
+}
+
+.hero-subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1rem;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 3rem;
+  max-width: 500px;
+  line-height: 1.8;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.6s forwards;
+}
+
+.hero-subtitle span {
+  color: var(--text);
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 0.8s forwards;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  padding: 0.9rem 2rem;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+.btn-primary:hover { transform: translateY(-2px); }
+
+.btn-secondary {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: color 0.2s;
+}
+.btn-secondary:hover { color: var(--text); }
+.btn-secondary::before { content: '→'; transition: transform 0.2s; }
+.btn-secondary:hover::before { transform: translateX(4px); }
+
+/* HERO GRID DECORACION */
+.hero-grid {
+  position: absolute;
+  right: 0; top: 50%;
+  transform: translateY(-50%);
+  width: 380px; height: 380px;
+  opacity: 0;
+  animation: fadeIn 1s ease 1s forwards;
+}
+
+.grid-card {
+  position: absolute;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+}
+
+.grid-card.main-card {
+  width: 220px;
+  top: 40px; right: 40px;
+  border-color: rgba(0,212,255,0.2);
+  box-shadow: var(--glow);
+}
+
+.grid-card.stat-card {
+  width: 130px;
+  bottom: 60px; right: 80px;
+  border-color: rgba(124,58,237,0.3);
+}
+
+.grid-card.lang-card {
+  width: 150px;
+  top: 180px; right: 220px;
+  border-color: rgba(16,185,129,0.2);
+}
+
+.card-label {
+  color: var(--muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.card-value {
+  font-size: 1.2rem;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.card-sub {
+  color: var(--muted);
+  font-size: 0.65rem;
+  margin-top: 0.25rem;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  background: var(--accent3);
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s infinite;
+}
+
+/* SECCION SOBRE MI */
+#about {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.section-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.section-label::before {
+  content: '';
+  display: block;
+  width: 2rem;
+  height: 1px;
+  background: var(--accent);
+}
+
+.section-title {
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 2rem;
+}
+
+.about-text {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+  line-height: 1.9;
+  font-size: 0.85rem;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+.about-text strong { color: var(--text); font-weight: 400; }
+
+.about-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.avatar-frame {
+  position: relative;
+  width: 280px;
+  height: 280px;
+}
+
+.avatar-ring {
+  position: absolute;
+  inset: -16px;
+  border: 1px solid rgba(0,212,255,0.2);
+  border-radius: 50%;
+  animation: spin 20s linear infinite;
+}
+.avatar-ring::before {
+  content: '';
+  position: absolute;
+  top: -3px; left: 50%;
+  width: 6px; height: 6px;
+  background: var(--accent);
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.avatar-ring2 {
+  position: absolute;
+  inset: -36px;
+  border: 1px solid rgba(124,58,237,0.15);
+  border-radius: 50%;
+  animation: spin 35s linear infinite reverse;
+}
+
+.avatar-placeholder {
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid rgba(0,212,255,0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+  position: relative;
+}
+
+.avatar-initials {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.avatar-name-sub {
+  font-size: 0.6rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  margin-top: 0.5rem;
+}
+
+/* SKILLS */
+#skills {
+  min-height: auto;
+  padding: 4rem 4rem 8rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.skill-cat {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: border-color 0.3s, transform 0.3s;
+}
+.skill-cat:hover {
+  border-color: rgba(0,212,255,0.25);
+  transform: translateY(-4px);
+}
+
+.skill-cat-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+.skill-dot.purple { background: var(--accent2); }
+.skill-dot.green { background: var(--accent3); }
+.skill-dot.orange { background: #f97316; }
+
+.skill-tag {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  margin: 0.2rem 0.2rem 0.2rem 0;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: color 0.2s, border-color 0.2s;
+}
+.skill-tag:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+/* PROYECTOS */
+#projects {
+  min-height: auto;
+  padding: 4rem 4rem 8rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.project-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: border-color 0.3s, transform 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.project-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.project-card:hover {
+  border-color: rgba(0,212,255,0.2);
+  transform: translateY(-6px);
+}
+.project-card:hover::before { opacity: 1; }
+
+.project-card.featured {
+  grid-column: span 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+}
+
+.project-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--accent);
+  background: rgba(0,212,255,0.08);
+  border: 1px solid rgba(0,212,255,0.2);
+  padding: 0.3rem 0.7rem;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
+.project-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.project-desc {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.8;
+  font-weight: 300;
+  margin-bottom: 1.5rem;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.project-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.6rem;
+  border-radius: 3px;
+}
+
+.project-visual {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+.code-line { line-height: 2; }
+.code-kw { color: #7c3aed; }
+.code-fn { color: #00d4ff; }
+.code-str { color: #10b981; }
+.code-cm { color: #4b5563; }
+
+/* EXPERIENCIA */
+#experience {
+  min-height: auto;
+  padding: 4rem 4rem 8rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.timeline {
+  margin-top: 3rem;
+  position: relative;
+  padding-left: 2rem;
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 3rem;
+  padding-left: 2rem;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -6px; top: 8px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  transition: border-color 0.3s;
+}
+.timeline-item:hover::before { border-color: var(--accent); }
+.timeline-item.active::before { border-color: var(--accent); background: var(--accent); }
+
+.timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-role {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-company {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 0.75rem;
+}
+
+.timeline-bullets {
+  list-style: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 2;
+}
+.timeline-bullets li::before { content: '→ '; color: var(--accent); }
+
+/* CONTACTO */
+#contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 80vh;
+}
+
+.contact-title {
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 1.5rem;
+}
+
+.contact-title .outline {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,255,255,0.2);
+}
+
+.contact-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 300;
+  margin-bottom: 3rem;
+  max-width: 400px;
+  line-height: 1.8;
+}
+
+.contact-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--border);
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  transition: color 0.2s, border-color 0.2s;
+  letter-spacing: 0.05em;
+}
+.contact-link:hover { color: var(--accent); border-color: rgba(0,212,255,0.3); }
+
+/* FOOTER */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 2rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.footer-copy {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+
+.footer-made {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--muted);
+}
+.footer-made span { color: var(--accent); }
+
+/* ANIMACIONES */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* SCROLL REVEAL */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+
+<canvas id="bg-canvas"></canvas>
+
+<nav>
+  <div class="nav-logo">alberto.díaz<span style="color:var(--muted)">_</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">01_about</a></li>
+    <li><a href="#skills">02_stack</a></li>
+    <li><a href="#projects">03_projects</a></li>
+    <li><a href="#experience">04_xp</a></li>
+    <li><a href="#contact">05_contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero" style="max-width:1200px;margin:0 auto;padding:10rem 4rem 4rem;min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;">
+    <p class="hero-eyebrow"><span class="status-dot"></span>disponible para proyectos · Valladolid, ES</p>
+    <h1 class="hero-title">
+      Alberto<br>
+      <span class="line2">Díaz</span><br>
+      <span class="accent-word">Esquerdo</span>
+    </h1>
+    <p class="hero-subtitle">
+      <span>Full Stack Developer</span> con foco en Java · Spring Boot · Angular.<br>
+      Explorando IA, agentes y automatización.
+    </p>
+    <div class="hero-cta">
+      <a href="#projects" class="btn-primary">Ver proyectos</a>
+      <a href="#contact" class="btn-secondary">Contactar</a>
+    </div>
+
+    <div class="hero-grid">
+      <div class="grid-card main-card">
+        <div class="card-label">estado actual</div>
+        <div class="card-value" style="font-size:0.9rem;color:var(--text);">Getronics</div>
+        <div class="card-sub"><span class="status-dot"></span>Full Stack Developer</div>
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);">
+          <div class="card-label">stack principal</div>
+          <div style="color:var(--text);margin-top:0.25rem;">Java · Spring Boot · Angular</div>
+        </div>
+      </div>
+      <div class="grid-card stat-card">
+        <div class="card-label">contrato</div>
+        <div class="card-value" style="color:var(--accent2);">∞</div>
+        <div class="card-sub">indefinido · 2025</div>
+      </div>
+      <div class="grid-card lang-card">
+        <div class="card-label">idiomas</div>
+        <div style="color:var(--text);font-size:0.75rem;margin-top:0.25rem;">ES · native</div>
+        <div style="color:var(--muted);font-size:0.75rem;">EN · B2</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div>
+      <p class="section-label reveal">about</p>
+      <h2 class="section-title reveal">Construyo cosas<br>que funcionan.</h2>
+      <p class="about-text reveal">
+        Desarrollador Full Stack con <strong>contrato indefinido en Getronics</strong>, donde trabajo en aplicaciones web corporativas con Java, Spring Boot y Angular. Empecé como becario con 380 horas y me contrataron al terminar.
+      </p>
+      <p class="about-text reveal">
+        Fuera del trabajo, estoy profundizando en <strong>inteligencia artificial aplicada</strong>: agentes, automatización y LLMs. Mi objetivo es convertirme en un desarrollador que no solo implementa IA, sino que la integra de forma real en productos útiles.
+      </p>
+      <p class="about-text reveal">
+        Inglés B2 (en proceso de conseguir C1). Carné B. <strong>Movilidad geográfica total.</strong>
+      </p>
+    </div>
+    <div class="about-visual reveal">
+      <div class="avatar-frame">
+        <div class="avatar-ring"></div>
+        <div class="avatar-ring2"></div>
+        <div class="avatar-placeholder">
+          <div class="avatar-initials">AD</div>
+          <div class="avatar-name-sub">alberto · díaz · esquerdo</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <p class="section-label reveal">02 · stack</p>
+    <h2 class="section-title reveal">Tecnologías</h2>
+    <div class="skills-grid">
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title"><span class="skill-dot"></span>Frontend</div>
+        <span class="skill-tag">Angular</span>
+        <span class="skill-tag">HTML5</span>
+        <span class="skill-tag">CSS3</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">TypeScript</span>
+        <span class="skill-tag">React</span>
+      </div>
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title"><span class="skill-dot purple" style="background:var(--accent2)"></span>Backend</div>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">Spring Boot</span>
+        <span class="skill-tag">Node.js</span>
+        <span class="skill-tag">REST APIs</span>
+        <span class="skill-tag">PHP</span>
+        <span class="skill-tag">Python</span>
+      </div>
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title"><span class="skill-dot green" style="background:var(--accent3)"></span>Bases de datos</div>
+        <span class="skill-tag">MySQL</span>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">Firebase</span>
+      </div>
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title"><span class="skill-dot orange" style="background:#f97316"></span>Herramientas</div>
+        <span class="skill-tag">Git</span>
+        <span class="skill-tag">GitHub</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Postman</span>
+        <span class="skill-tag">Figma</span>
+        <span class="skill-tag">Scrum</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <p class="section-label reveal">03 · proyectos</p>
+    <h2 class="section-title reveal">Lo que construyo</h2>
+    <div class="projects-grid">
+      <a href="https://github.com/diaz2806/tfg-backend" target="_blank" class="project-card featured reveal">
+        <div>
+          <span class="project-badge">TFG · destacado</span>
+          <h3 class="project-title">Control de Gastos con IA</h3>
+          <p class="project-desc">
+            Aplicación full stack para gestión financiera personal. Backend REST con Spring Boot, frontend Angular, y asistente IA integrado con Groq para análisis y recomendaciones. Exportación a Excel y PDF.
+          </p>
+          <div class="project-tags">
+            <span class="project-tag">Java 21</span>
+            <span class="project-tag">Spring Boot</span>
+            <span class="project-tag">Angular</span>
+            <span class="project-tag">Groq API</span>
+            <span class="project-tag">MySQL</span>
+            <span class="project-tag">iText7</span>
+          </div>
+        </div>
+        <div class="project-visual">
+          <div class="code-line"><span class="code-cm">// GroqService.java</span></div>
+          <div class="code-line"><span class="code-kw">@Service</span></div>
+          <div class="code-line"><span class="code-kw">public class</span> <span class="code-fn">GroqService</span> {</div>
+          <div class="code-line" style="padding-left:1rem;"><span class="code-kw">private final</span> WebClient client;</div>
+          <div class="code-line" style="padding-left:1rem;">&nbsp;</div>
+          <div class="code-line" style="padding-left:1rem;"><span class="code-kw">public</span> Mono&lt;String&gt; <span class="code-fn">analyze</span>(</div>
+          <div class="code-line" style="padding-left:2rem;">List&lt;Gasto&gt; gastos) {</div>
+          <div class="code-line" style="padding-left:2rem;"><span class="code-kw">return</span> client.<span class="code-fn">post</span>()</div>
+          <div class="code-line" style="padding-left:3rem;">.<span class="code-fn">bodyValue</span>(prompt)</div>
+          <div class="code-line" style="padding-left:3rem;">.<span class="code-fn">retrieve</span>()</div>
+          <div class="code-line" style="padding-left:3rem;">.<span class="code-fn">bodyToMono</span>(String.<span class="code-kw">class</span>);</div>
+          <div class="code-line" style="padding-left:1rem;">}</div>
+          <div class="code-line">}</div>
+        </div>
+      </a>
+
+      <a href="https://github.com/diaz2806/tfg-frontend" target="_blank" class="project-card reveal">
+        <span class="project-badge">Frontend</span>
+        <h3 class="project-title">TFG Frontend</h3>
+        <p class="project-desc">SPA en Angular 20 con dashboard, calendario, chat IA y exportación. Guards de autenticación y servicios reactivos.</p>
+        <div class="project-tags">
+          <span class="project-tag">Angular 20</span>
+          <span class="project-tag">TypeScript</span>
+          <span class="project-tag">Angular Material</span>
+          <span class="project-tag">RxJS</span>
+        </div>
+      </a>
+
+      <div class="project-card reveal" style="border-style:dashed;opacity:0.6;cursor:default;">
+        <span class="project-badge" style="color:var(--accent2);background:rgba(124,58,237,0.08);border-color:rgba(124,58,237,0.2);">En desarrollo</span>
+        <h3 class="project-title">Agente de Code Review</h3>
+        <p class="project-desc">Agente IA que analiza repos de GitHub, detecta code smells y genera informes con sugerencias de mejora en tiempo real.</p>
+        <div class="project-tags">
+          <span class="project-tag">Python</span>
+          <span class="project-tag">FastAPI</span>
+          <span class="project-tag">React</span>
+          <span class="project-tag">Claude API</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience">
+    <p class="section-label reveal">04 · experiencia</p>
+    <h2 class="section-title reveal">Trayectoria</h2>
+    <div class="timeline reveal">
+      <div class="timeline-item active">
+        <div class="timeline-date">2025 — presente</div>
+        <div class="timeline-role">Full Stack Developer</div>
+        <div class="timeline-company">Getronics · Valladolid</div>
+        <ul class="timeline-bullets">
+          <li>Desarrollo de aplicaciones web corporativas full stack con contrato indefinido</li>
+          <li>Diseño e implementación de APIs RESTful con Spring Boot</li>
+          <li>Colaboración en equipos multidisciplinares con metodología Scrum</li>
+          <li>Optimización de rendimiento y mantenimiento de software en producción</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">Feb 2025 — Dic 2025</div>
+        <div class="timeline-role">Desarrollador en Prácticas</div>
+        <div class="timeline-company">Getronics · Valladolid</div>
+        <ul class="timeline-bullets">
+          <li>Prácticas profesionales de 380 horas en entorno real</li>
+          <li>Desarrollo y mejora de sistemas para clientes corporativos</li>
+          <li>Contratación indefinida al finalizar las prácticas</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2022 — 2024</div>
+        <div class="timeline-role">Profesor Particular</div>
+        <div class="timeline-company">Autónomo · Valladolid</div>
+        <ul class="timeline-bullets">
+          <li>Clases de informática y materias técnicas a estudiantes</li>
+        </ul>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">2023 — 2025</div>
+        <div class="timeline-role">CFGS Desarrollo de Aplicaciones Multiplataforma</div>
+        <div class="timeline-company">Centro Gregorio Fernández · Valladolid</div>
+        <ul class="timeline-bullets">
+          <li>Programación orientada a objetos, bases de datos y desarrollo móvil</li>
+          <li>Prácticas en empresa real con contratación posterior</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <h2 class="contact-title reveal">
+      Hablemos.<br>
+      <span class="outline">Construyamos.</span>
+    </h2>
+    <p class="contact-sub reveal">
+      Abierto a proyectos freelance, colaboraciones y conversaciones sobre tecnología e IA.
+    </p>
+    <div class="contact-links reveal">
+      <a href="mailto:diazesquerdoalberto@gmail.com" class="contact-link">
+        ✉ diazesquerdoalberto@gmail.com
+      </a>
+      <a href="https://github.com/diaz2806" target="_blank" class="contact-link">
+        ⌥ github.com/diaz2806
+      </a>
+      <a href="tel:+34636784563" class="contact-link">
+        ✆ +34 636 784 563
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span class="footer-copy">© 2025 Alberto Díaz Esquerdo</span>
+  <span class="footer-made">crafted with <span>código</span> + <span>caffeine</span></span>
+</footer>
+
+<script>
+// CURSOR
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.transform = `translate(${mx - 4}px, ${my - 4}px)`;
+});
+
+function animateRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.transform = `translate(${rx - 16}px, ${ry - 16}px)`;
+  requestAnimationFrame(animateRing);
+}
+animateRing();
+
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    ring.style.width = '48px';
+    ring.style.height = '48px';
+    ring.style.borderColor = 'rgba(0,212,255,0.6)';
+  });
+  el.addEventListener('mouseleave', () => {
+    ring.style.width = '32px';
+    ring.style.height = '32px';
+    ring.style.borderColor = 'rgba(0,212,255,0.4)';
+  });
+});
+
+// CANVAS BACKGROUND - GRID + PARTICLES
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const particles = [];
+for (let i = 0; i < 60; i++) {
+  particles.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    r: Math.random() * 1.5 + 0.5,
+    alpha: Math.random() * 0.4 + 0.1
+  });
+}
+
+function drawCanvas() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+  ctx.lineWidth = 1;
+  const gs = 60;
+  for (let x = 0; x < canvas.width; x += gs) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+  }
+  for (let y = 0; y < canvas.height; y += gs) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+  }
+
+  // Particles + connections
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,212,255,${p.alpha})`;
+    ctx.fill();
+  });
+
+  // Lines between close particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 120) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,212,255,${0.06 * (1 - dist/120)})`;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(drawCanvas);
+}
+drawCanvas();
+
+// SCROLL REVEAL
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+
+reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
